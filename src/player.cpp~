@@ -1,0 +1,62 @@
+#include <iostream>
+#include <string>
+#include "player.hpp"
+
+using namespace std;
+
+Player::Player(){
+
+}
+
+ 
+Player::~Player(){//Destrutor
+ 
+ 
+}
+
+
+
+int Player::getPosX(){
+ 	
+	return posX;
+}
+void Player::setPosX(int posX){
+	this->posX = posX;
+
+}
+
+
+
+int Player::getPosY(){
+ 	
+	return posY;
+
+}
+void Player::setPosY(int posY){
+	this->posY = posY;
+
+}
+
+
+int Player::getLife(){
+	
+	return life;
+}
+void Player::setLife(int life){
+	this->life = life;
+
+}
+
+ 
+string Player::getName(){
+
+	return name;
+}
+void Player::setName(string name){
+	this->name = name;
+
+}
+
+
+
+
