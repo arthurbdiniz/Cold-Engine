@@ -3,40 +3,38 @@
 #include <string>
 #include <stdio.h>
 #include "game.hpp"
+#include "TextureManager.hpp"
 
 using namespace std;
 
-Game::Game(string gameName, int screenPosX, int screenPosY, int screenSizeX, int screenSizeY){
 
-	this->gameName = gameName;
-	this->screenPosX = screenPosX;
-	this->screenPosY = screenPosY;
-	this->screenSizeX = screenSizeX;
-	this->screenSizeY = screenSizeY;
-	cout << "\ntesten\n";
-	if ( !InitEverything() ){
-		//quit
-	}
 
-}
+
+	//TextureManager* textureManager = new TextureManager(renderer);
+		
+	
+	void RunLoop();
+
+
 
 Game::~Game(){}
 
 void Game::Render(){
 	// Clear the window and make it all green
-	SDL_RenderClear( renderer );
+	SDL_RenderClear( m_renderer );
 
 	// Render our "player"
 	//SDL_RenderFillRect( renderer, &playerPos );
 
-//	draw("bg", 0, 0, 1000, 500, renderer, flip);
+	//textureManager->draw("bg", 0, 0, 1000, 500, renderer, flip);
 
-	//draw("animate", 0, 0, 128, 82, renderer, flip);
+	//textureManager->draw("animate", 0, 0, 128, 82, renderer, flip);
 
-//	drawFrame("animate", playerPos.x , playerPos.y, 128, 82, 1, currentFrame, renderer, flip);
+	//textureManager->drawFrame("animate", playerPos.x , playerPos.y, 
+	//							128, 82, 1, currentFrame, renderer, flip);
 
 	// Render the changes above
-	SDL_RenderPresent( renderer);
+	SDL_RenderPresent( m_renderer);
 }
 
 bool Game::InitEverything(){
@@ -47,11 +45,10 @@ bool Game::InitEverything(){
 	if ( !CreateWindow() )
 		return false;
 
+	
 	if ( !CreateRenderer() )
 		return false;
 
-	SetupRenderer();
-	RunLoop();
 
 	return true;
 }
@@ -69,9 +66,15 @@ bool Game::InitSDL(){
 
 bool Game::CreateWindow(){
 
-	window = SDL_CreateWindow( gameName.c_str(), screenPosX, screenPosY, screenSizeX, screenSizeY, 0);
+	m_window = SDL_CreateWindow( 
+							m_gameName.c_str(), 
+							m_screen_pos.first, 
+							m_screen_pos.second, 
+							m_window_size.first, 
+							m_window_size.second, 
+							0);
 
-	if ( window == nullptr )
+	if ( m_window == nullptr )
 	{
 		std::cout << "Failed to create window : " << SDL_GetError();
 		return false;
@@ -82,9 +85,10 @@ bool Game::CreateWindow(){
 
 bool Game::CreateRenderer(){
 
-	renderer = SDL_CreateRenderer( window, -1, 0 );
+	m_renderer = SDL_CreateRenderer( m_window, -1, 
+			SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-	if ( renderer == nullptr )
+	if ( m_renderer == nullptr )
 	{
 		std::cout << "Failed to create renderer : " << SDL_GetError();
 		return false;
@@ -96,13 +100,22 @@ bool Game::CreateRenderer(){
 void Game::SetupRenderer(){
 
 	// Set size of renderer to the same as window
-	SDL_RenderSetLogicalSize( renderer, screenSizeX, screenSizeY );
+	SDL_RenderSetLogicalSize( m_renderer, m_window_size.first, m_window_size.second );
 
 	// Set color of renderer to green
-	SDL_SetRenderDrawColor( renderer, 0, 255, 0, 255 );
+	SDL_SetRenderDrawColor(m_renderer,
+                           m_background_color.r, 
+                           m_background_color.b,
+                           m_background_color.g, 
+                           m_background_color.a);
 }
 
 void Game::RunLoop(){
+
+	if ( !InitEverything() ){
+		//quit
+	}
+	SetupRenderer();
 
 	bool quit = true;
 
@@ -119,11 +132,11 @@ void Game::RunLoop(){
 				switch ( event.key.keysym.sym ){
 					
 					case SDLK_RIGHT:
-						dir = true;
+						
 						break;
 					
 					case SDLK_LEFT:
-						esq = true;
+						
 						break;
 
 					case SDLK_DOWN:
@@ -143,10 +156,9 @@ void Game::RunLoop(){
 
 		
 		//Movimenta as sprites
-		currentFrame = 128 * int(((SDL_GetTicks() / 100) % 6));
+		//currentFrame = 128 * int(((SDL_GetTicks() / 100) % 6));
 				
-		esq = false;
-		dir = false;
+	
 		
 		Render();
 
@@ -156,5 +168,24 @@ void Game::RunLoop(){
 }
 
 
+void Game::SetBackgroundColor(int R, int G, int B, int A){
+	m_background_color.r = R;
+	m_background_color.g = G;
+	m_background_color.b = B;
+	m_background_color.a = A;
+
+	if (m_renderer != NULL)
+    {
+        SDL_SetRenderDrawColor(m_renderer,
+                               m_background_color.r, 
+                               m_background_color.b,
+                               m_background_color.g, 
+                               m_background_color.a);
+    }
+}
 
 
+
+
+
+ 
